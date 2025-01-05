@@ -52,7 +52,7 @@ end
 function M.bisect_left(references, pos)
     local l, r = 1, #references + 1
     while l < r do
-        local m = l + math.floor((r - l) / 2)
+        local m = math.floor((l + r) / 2)
         if pos_before(references[m][2], pos) then
             l = m + 1
         else
