@@ -131,12 +131,15 @@ function M.refresh_references(bufnr, winid)
         return
     end
 
+    local need_lsp_request = false
+
     -- We might want to optimize here by returning early if cursor is in references.
     -- The downside is that LSP servers can sometimes return a different list of references
     -- as you move around an existing reference (like return statements).
     if written[bufnr] or not ref.buf_cursor_in_references(bufnr, util.get_cursor_pos(winid)) then
         hl.buf_clear_references(bufnr)
         ref.buf_set_references(bufnr, {})
+        need_lsp_request = true
     elseif config.large_file_cutoff() ~= nil and vim.fn.line('$') > config.large_file_cutoff() then
         return
     end
@@ -148,7 +151,9 @@ function M.refresh_references(bufnr, winid)
 
     local provider = M.get_provider(bufnr)
     if not provider then return end
-    pcall(provider['initiate_request'], bufnr, winid)
+    if need_lsp_request then
+        pcall(provider['initiate_request'], bufnr, winid)
+    end
 
     local changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
 
