@@ -10,7 +10,7 @@ local timers = {}
 local paused_bufs = {}
 local stopped_bufs = {}
 local is_paused = false
-local written = {}
+local tick = {}
 local error_timestamps = {}
 local frozen_bufs = {}
 local invisible_bufs = {}
@@ -88,16 +88,6 @@ function M.start()
         })
     end
 
-    -- If vim.lsp.buf.format is called, this will call vim.api.nvim_buf_set_text which messes up extmarks.
-    -- By using this `written` variable, we can ensure refresh_references doesn't terminate early based on
-    -- ref.buf_cursor_in_references being incorrect (we have references but they're not actually showing
-    -- as illuminated). vim.lsp.buf.format will trigger CursorMoved so we don't need to do it here.
-    vim.api.nvim_create_autocmd({ 'BufWritePost' }, {
-        group = AUGROUP,
-        callback = function()
-            written[vim.api.nvim_get_current_buf()] = true
-        end,
-    })
     vim.api.nvim_create_autocmd({ 'VimLeave' }, {
         group = AUGROUP,
         callback = function()
@@ -132,18 +122,19 @@ function M.refresh_references(bufnr, winid)
     end
 
     local need_lsp_request = false
+    local changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
 
     -- We might want to optimize here by returning early if cursor is in references.
     -- The downside is that LSP servers can sometimes return a different list of references
     -- as you move around an existing reference (like return statements).
-    if written[bufnr] or not ref.buf_cursor_in_references(bufnr, util.get_cursor_pos(winid)) then
+    if tick[bufnr] ~= changedtick or not ref.buf_cursor_in_references(bufnr, util.get_cursor_pos(winid)) then
         hl.buf_clear_references(bufnr)
         ref.buf_set_references(bufnr, {})
         need_lsp_request = true
     elseif config.large_file_cutoff() ~= nil and vim.fn.line('$') > config.large_file_cutoff() then
         return
     end
-    written[bufnr] = nil
+    tick[bufnr] = changedtick
 
     if timers[bufnr] then
         stop_timer(timers[bufnr])
@@ -154,8 +145,6 @@ function M.refresh_references(bufnr, winid)
     if need_lsp_request then
         pcall(provider['initiate_request'], bufnr, winid)
     end
-
-    local changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
 
     local timer = vim.loop.new_timer()
     timers[bufnr] = timer
