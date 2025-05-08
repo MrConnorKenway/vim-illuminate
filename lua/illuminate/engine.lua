@@ -58,6 +58,10 @@ function M.start()
             callback = function(details)
                 require('illuminate.providers.treesitter').detach(details.buf)
 
+                if not package.loaded['nvim-treesitter'] then
+                    return
+                end
+
                 local lang = vim.treesitter.language.get_lang(details.match)
                 local ok, query = pcall(require, 'nvim-treesitter.query')
                 if not ok then
