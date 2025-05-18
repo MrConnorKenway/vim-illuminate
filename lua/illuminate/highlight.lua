@@ -72,6 +72,7 @@ function M.range(bufnr, start, finish, kind)
 end
 
 function M.buf_clear_references(bufnr)
+    vim.fn.clearmatches()
     vim.api.nvim_buf_clear_namespace(bufnr, HL_NAMESPACE, 0, -1)
 end
 

@@ -147,6 +147,16 @@ function M.refresh_references(bufnr, winid)
     local provider = M.get_provider(bufnr)
     if not provider then return end
     if need_lsp_request then
+        if provider.is_regex then
+            local id = vim.w[winid].id
+            local cword = util.get_cur_word(bufnr, util.get_cursor_pos(winid))
+            if id then
+                pcall(vim.fn.matchdelete, id, winid)
+            end
+            vim.w[winid].id = vim.fn.matchadd('IlluminatedWordText', cword)
+            return
+        end
+
         pcall(provider['initiate_request'], bufnr, winid)
     end
 
