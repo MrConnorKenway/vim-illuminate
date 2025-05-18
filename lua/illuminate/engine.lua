@@ -127,6 +127,12 @@ function M.refresh_references(bufnr, winid)
 
     local need_lsp_request = false
     local changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
+    local cword = util.get_cur_word(bufnr, util.get_cursor_pos(winid))
+
+    if cword == [[\V\<\>]] or cword == [[\c\<\>]] then
+        hl.buf_clear_references(bufnr)
+        return
+    end
 
     -- We might want to optimize here by returning early if cursor is in references.
     -- The downside is that LSP servers can sometimes return a different list of references
@@ -149,7 +155,6 @@ function M.refresh_references(bufnr, winid)
     if need_lsp_request then
         if provider.is_regex then
             local id = vim.w[winid].id
-            local cword = util.get_cur_word(bufnr, util.get_cursor_pos(winid))
             if id then
                 pcall(vim.fn.matchdelete, id, winid)
             end
