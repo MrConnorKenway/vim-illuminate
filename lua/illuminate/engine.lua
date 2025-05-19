@@ -154,11 +154,11 @@ function M.refresh_references(bufnr, winid)
     if not provider then return end
     if need_lsp_request then
         if provider.is_regex then
-            local id = vim.w[winid].id
+            local id = vim.w[winid].illuminated_match_id
             if id then
-                pcall(vim.fn.matchdelete, id, winid)
+                vim.fn.matchdelete(id, winid)
             end
-            vim.w[winid].id = vim.fn.matchadd('IlluminatedWordText', cword)
+            vim.w[winid].illuminated_match_id = vim.fn.matchadd('IlluminatedWordText', cword)
             return
         end
 
