@@ -38,6 +38,8 @@ function M.get_cur_word(bufnr, cursor)
     local modifiers = [[\V]]
     if config.case_insensitive_regex() then
         modifiers = modifiers .. [[\c]]
+    else
+        modifiers = modifiers .. [[\C]]
     end
     local ok, escaped = pcall(vim.fn.escape, word, [[/\]])
     if ok then
