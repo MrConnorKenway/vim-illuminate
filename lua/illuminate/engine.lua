@@ -163,6 +163,8 @@ function M.refresh_references(bufnr, winid)
         end
 
         pcall(provider['initiate_request'], bufnr, winid)
+    else
+        return
     end
 
     local timer = vim.loop.new_timer()
