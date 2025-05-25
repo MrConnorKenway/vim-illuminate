@@ -158,7 +158,7 @@ function M.refresh_references(bufnr, winid)
             if id then
                 vim.fn.matchdelete(id, winid)
             end
-            vim.w[winid].illuminated_match_id = vim.fn.matchadd('IlluminatedWordText', cword)
+            vim.w[winid].illuminated_match_id = vim.fn.matchadd('IlluminatedWordText', cword, -1)
             return
         end
 
