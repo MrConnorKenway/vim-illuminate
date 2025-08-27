@@ -13,6 +13,9 @@ function M.goto_next_reference(wrap)
         local provider = engine.get_provider(bufnr)
         if provider and provider.is_regex then
             local cword = util.get_cur_word(bufnr, cursor_pos)
+            if not cword then
+                return
+            end
             local flags = 'sz'
             if not wrap then
                 flags = flags .. 'W'
@@ -50,6 +53,9 @@ function M.goto_prev_reference(wrap)
         local provider = engine.get_provider(bufnr)
         if provider and provider.is_regex then
             local cword, start_idx = util.get_cur_word(bufnr, cursor_pos)
+            if not cword then
+                return
+            end
             local flags = 'sb'
             if not wrap then
                 flags = flags .. 'W'
