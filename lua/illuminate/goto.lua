@@ -13,8 +13,11 @@ function M.goto_next_reference(wrap)
         local provider = engine.get_provider(bufnr)
         if provider and provider.is_regex then
             local cword = util.get_cur_word(bufnr, cursor_pos)
-            vim.cmd('normal! m`')
-            vim.fn.search(cword, wrap and '' or 'W')
+            local flags = 'sz'
+            if not wrap then
+                flags = flags .. 'W'
+            end
+            vim.fn.search(cword, flags)
         end
         return
     end
@@ -47,8 +50,11 @@ function M.goto_prev_reference(wrap)
         local provider = engine.get_provider(bufnr)
         if provider and provider.is_regex then
             local cword = util.get_cur_word(bufnr, cursor_pos)
-            vim.cmd('normal! m`')
-            vim.fn.search(cword, wrap and 'b' or 'bW')
+            local flags = 'sb'
+            if not wrap then
+                flags = flags .. 'W'
+            end
+            vim.fn.search(cword, flags)
         end
         return
     end
