@@ -43,7 +43,7 @@ function M.get_cur_word(bufnr, cursor)
     end
     local ok, escaped = pcall(vim.fn.escape, word, [[/\]])
     if ok then
-        return modifiers .. [[\<]] .. escaped .. [[\>]]
+        return modifiers .. [[\<]] .. escaped .. [[\>]], start_idx
     end
 end
 

@@ -49,12 +49,21 @@ function M.goto_prev_reference(wrap)
     if #ref.buf_get_references(bufnr) == 0 then
         local provider = engine.get_provider(bufnr)
         if provider and provider.is_regex then
-            local cword = util.get_cur_word(bufnr, cursor_pos)
+            local cword, start_idx = util.get_cur_word(bufnr, cursor_pos)
             local flags = 'sb'
             if not wrap then
                 flags = flags .. 'W'
             end
-            vim.fn.search(cword, flags)
+            vim.fn.search(cword, flags, nil, nil, function()
+                -- When `skip` is called, the cursor will be placed at the
+                -- front of matched position, so we can check if this match
+                -- is the same as we started
+                local pos = util.get_cursor_pos(winid)
+                if pos[2] == start_idx and pos[1] == cursor_pos[1] then
+                    return true
+                end
+                return false
+            end)
         end
         return
     end
