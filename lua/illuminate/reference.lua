@@ -46,7 +46,7 @@ local function buf_sort_references(bufnr)
 end
 
 function M.is_pos_in_ref(pos, ref)
-    return (pos_before(ref[1], pos) or pos_equal(ref[1], pos)) and (pos_before(pos, ref[2]) or pos_equal(pos, ref[2]))
+    return (pos_before(ref[1], pos) or pos_equal(ref[1], pos)) and (pos_before(pos, ref[2]))
 end
 
 function M.bisect_left(references, pos)
