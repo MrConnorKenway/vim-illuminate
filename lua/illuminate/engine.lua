@@ -201,7 +201,7 @@ function M.refresh_references(bufnr, winid)
             if references ~= nil then
                 ref.buf_set_references(bufnr, references)
                 if ref.buf_cursor_in_references(bufnr, util.get_cursor_pos(winid)) then
-                    if not invisible_bufs[bufnr] == true then
+                    if not invisible_bufs[bufnr] then
                         hl.buf_highlight_references(bufnr, ref.buf_get_references(bufnr))
                     end
                 else

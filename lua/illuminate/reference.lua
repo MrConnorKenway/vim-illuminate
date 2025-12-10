@@ -81,11 +81,8 @@ function M.buf_cursor_in_references(bufnr, cursor_pos)
     if i > #get_references(bufnr) then
         return false
     end
-    if not M.is_pos_in_ref(cursor_pos, get_references(bufnr)[i]) then
-        return false
-    end
 
-    return true
+    return M.is_pos_in_ref(cursor_pos, get_references(bufnr)[i])
 end
 
 return M
