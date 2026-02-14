@@ -129,7 +129,7 @@ function M.refresh_references(bufnr, winid)
     local changedtick = vim.api.nvim_buf_get_changedtick(bufnr)
     local cword = util.get_cur_word(bufnr, util.get_cursor_pos(winid))
 
-    if cword == [[\V\<\>]] or cword == [[\c\<\>]] then
+    if cword == nil then
         hl.buf_clear_references(bufnr)
         return
     end
