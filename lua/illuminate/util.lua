@@ -28,12 +28,19 @@ local END_WORD_REGEX = vim.regex([[\k*$]])
 -- foo
 -- Foo
 -- fOo
+--- @return string?, integer?
 function M.get_cur_word(bufnr, cursor)
     local line = vim.api.nvim_buf_get_lines(bufnr, cursor[1], cursor[1] + 1, false)[1]
     local left_part = string.sub(line, 0, cursor[2] + 1)
     local right_part = string.sub(line, cursor[2] + 1)
     local start_idx, _ = END_WORD_REGEX:match_str(left_part)
+    if start_idx == nil then
+        return nil
+    end
     local _, end_idx = START_WORD_REGEX:match_str(right_part)
+    if end_idx == nil then
+        return nil
+    end
     local word = string.format('%s%s', string.sub(left_part, start_idx + 1), string.sub(right_part, 2, end_idx))
     local modifiers = [[\V]]
     if config.case_insensitive_regex() then
@@ -44,6 +51,8 @@ function M.get_cur_word(bufnr, cursor)
     local ok, escaped = pcall(vim.fn.escape, word, [[/\]])
     if ok then
         return modifiers .. [[\<]] .. escaped .. [[\>]], start_idx
+    else
+        return nil
     end
 end
 
