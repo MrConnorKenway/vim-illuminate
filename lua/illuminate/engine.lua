@@ -131,6 +131,7 @@ function M.refresh_references(bufnr, winid)
 
     if cword == nil then
         hl.buf_clear_references(bufnr)
+        ref.buf_set_references(bufnr, {})
         return
     end
 
